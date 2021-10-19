@@ -7,3 +7,21 @@ Some useful scripts for gentoo.
 - **eclt** - shows how long the system will be updated
 - **eupd** - alias for synchronization and updating packages
 - **rcms** - systemd-like alias for rc-service
+
+## Requirements
+
+**qtop**
+
+- app-portage/portage-utils
+
+**esync**
+
+- app-portage/layman
+
+**eclt**
+
+- app-portage/portage-utils
+
+**eupd**
+
+- app-portage/layman
