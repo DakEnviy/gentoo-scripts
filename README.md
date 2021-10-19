@@ -32,3 +32,18 @@ Some useful scripts for gentoo.
 **rcms**
 
 - sys-apps/openrc
+
+## Install
+
+### Using layman
+
+```
+# layman -o https://raw.githubusercontent.com/DakEnviy/underworld-overlay/master/repositories.xml -f -a underworld
+# layman -s underworld
+# emerge -a gentoo-scripts
+```
+
+### Manual
+
+Just place these scripts to /usr/bin directory.
+
