@@ -16,12 +16,19 @@ Some useful scripts for gentoo.
 
 **esync**
 
+- sys-apps/portage
 - app-portage/layman
 
 **eclt**
 
+- sys-apps/portage
 - app-portage/portage-utils
 
 **eupd**
 
+- sys-apps/portage
 - app-portage/layman
+
+**rcms**
+
+- sys-apps/openrc
