@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ "$EUID" -ne 0 ]]; then
+    echo "No root alert!"
+    exit
+fi
+
+for service in "${@:2}"; do
+    rc-service "$service" "$1"
+done

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ "$EUID" -ne 0 ]]; then
+    echo "No root alert!"
+    exit
+fi
+
+emerge -pvquND --with-bdeps=y @world\
+    | grep -P '^\['\
+    | sed -E 's/^\[[^]]+\] ([^ ]+) .+$/\1/;s/-[0-9\.]+(-r[0-9]+)?$//'\
+    | xargs qlop -aM\
+    | sort -t " " -k 2 -rn\
+    | awk '{ total += $2; printf("%s ", substr($1, 1, length($1)-1)); system("date -u +%H:%M:%S -d @"$2); } END { printf "total "; system("date -u +%H:%M:%S -d @"total); }'\
+    | cat -n\
+    | column -tR1

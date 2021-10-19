@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [[ "$EUID" -ne 0 ]]; then
+    echo "No root alert!"
+    exit
+fi
+
+echo "Syncing layman overlays..."\
+    && layman -S -q\
+    && echo "Syncing emerge..."\
+    && emerge --sync -q\
+    && echo "Done."

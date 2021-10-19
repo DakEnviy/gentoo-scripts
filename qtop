@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [[ "$EUID" -ne 0 ]]; then
+    echo "No root alert!"
+    exit
+fi
+
+if [[ -z "$1" ]]; then
+    list=$( qlist -CI | xargs qlop -aM | sort -t " " -k 2 -rn )
+else
+    list=$( qlist -CI | xargs qlop -aM | sort -t " " -k 2 -rn | head -n "$1" )
+fi
+
+for item in "${list[@]}"; do
+    echo "$item"
+done\
+    | awk '{ total += $2; printf("%s ", substr($1, 1, length($1)-1)); system("date -u +%H:%M:%S -d @"$2); } END { printf "total "; system("date -u +%H:%M:%S -d @"total); }'\
+    | cat -n\
+    | column -tR1
