@@ -5,8 +5,12 @@ if [[ "$EUID" -ne 0 ]]; then
     exit
 fi
 
-echo "Syncing layman overlays..."\
-    && layman -S -q\
-    && echo "Syncing emerge..."\
-    && emerge --sync -q\
-    && echo "Done."
+if command -v layman1 &>/dev/null; then
+    echo "Syncing layman overlays..."
+    layman -S -q
+fi
+
+echo "Syncing emerge..."
+emerge --sync -q
+
+echo "Done."
