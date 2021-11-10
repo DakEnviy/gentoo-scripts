@@ -33,10 +33,18 @@ Some useful scripts for gentoo.
 
 ## Install
 
+### Using eselect repository - preferred method
+
+```
+# eselect repository enable underworld
+# emerge --sync
+# emerge -a gentoo-scripts
+```
+
 ### Using layman
 
 ```
-# layman -o https://raw.githubusercontent.com/DakEnviy/underworld-overlay/master/repositories.xml -f -a underworld
+# layman -a underworld
 # layman -s underworld
 # emerge -a gentoo-scripts
 ```
