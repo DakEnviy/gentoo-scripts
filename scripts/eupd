@@ -11,7 +11,7 @@ esync() {
         layman -S -q
     fi
 
-    echo "Syncing emerge..."
+    echo "Syncing repositories..."
     emerge --sync -q
 
     echo "Done."
