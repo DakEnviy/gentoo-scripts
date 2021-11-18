@@ -27,8 +27,6 @@ esync() {
 
     echo "Syncing repositories..."
     asudo emerge --sync -q
-
-    echo "Done."
 }
 
 show_help() {
@@ -48,10 +46,12 @@ OPTIONS:
     -q  Runs emerge with --quiet flag (see man 1 emerge)
     -p  Runs emerge with --pretend flag (see man 1 emerge)
     -m  Runs emerge with --autounmask and --autounmask-write flags (see man 1 emerge)
+    -d  Runs 'emerge --ask --quiet --depclean' after updating (see man 1 emerge)
 EOF
 }
 
 sync=0
+depclean=0
 emerge_flags=()
 
 process_option() {
@@ -78,11 +78,14 @@ process_option() {
         m)
             emerge_flags+=("--autounmask" "--autounmask-write")
             ;;
+        d)
+            depclean=1
+            ;;
     esac
 }
 
 OPTIND=1
-while getopts "hsavqpm" opt; do
+while getopts "hsavqpmd" opt; do
     process_option "$opt"
 done
 shift "$((OPTIND-1))"
@@ -102,4 +105,10 @@ if [[ "$sync" -eq 1 ]]; then
     esync
 fi
 
+echo "Running emerge..."
 asudo emerge "${emerge_flags[@]}" "${COMMON_EMERGE_FLAGS[@]}" "$@" "@world"
+
+if [[ "$depclean" -eq 1 ]]; then
+    echo "Running depclean..."
+    emerge --ask --quiet --depclean
+fi
