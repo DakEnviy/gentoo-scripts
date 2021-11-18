@@ -1,7 +1,10 @@
 #!/bin/bash
 
-if [[ "$EUID" -ne 0 ]]; then
-    echo "No root alert!"
+EMERGE_LOG_FILE="/var/log/emerge.log"
+
+if [[ ! -r "$EMERGE_LOG_FILE" ]]; then
+    echo "Could not open logfile '$EMERGE_LOG_FILE': Permission denied"
+    echo "Add your user to portage group or run this command with sudo"
     exit
 fi
 

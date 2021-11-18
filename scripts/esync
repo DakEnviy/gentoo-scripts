@@ -2,6 +2,7 @@
 
 if [[ "$EUID" -ne 0 ]]; then
     echo "No root alert!"
+    echo "Run this command with sudo"
     exit
 fi
 
