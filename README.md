@@ -5,8 +5,11 @@ Some useful scripts for gentoo.
 - **qtop** - helps to know about time estimation for installing packages
 - **esync** - alias for synchronization with layman and emerge (`layman -S` and `emerge --sync`)
 - **eclt** - shows how long the system will be updated
-- **eupd** - alias for synchronization and updating packages
+- **eupd** - update script for emerge
 - **rcms** - systemd-like alias for rc-service
+
+Every script has `AUTO_SUDO` constant, which runs script as sudo automatically.
+If you want to enable this, write `AUTO_SUDO=1` instead of `AUTO_SUDO=0`
 
 ## Requirements
 
@@ -17,6 +20,8 @@ Some useful scripts for gentoo.
 **esync**
 
 - sys-apps/portage
+- app-portage/layman (optional)
+- app-portage/portpeek (optional)
 
 **eclt**
 
@@ -26,6 +31,8 @@ Some useful scripts for gentoo.
 **eupd**
 
 - sys-apps/portage
+- app-portage/layman (optional)
+- app-portage/portpeek (optional)
 
 **rcms**
 
