@@ -95,8 +95,8 @@ if [[ -n "$1" && "$1" =~ ^[^-] ]]; then
     shift
 fi
 
-if [[ -z "$emerge_flags" ]]; then
-    emerge_flags="${DEFAULT_EMERGE_FLAGS[@]}"
+if [[ "${#emerge_flags[@]}" -eq 0 ]]; then
+    emerge_flags=("${DEFAULT_EMERGE_FLAGS[@]}")
 fi
 
 if [[ "$sync" -eq 1 ]]; then
