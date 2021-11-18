@@ -3,7 +3,7 @@
 AUTO_SUDO=0
 EMERGE_LOG_FILE="/var/log/emerge.log"
 
-function asudo() {
+asudo() {
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
         sudo $@
     else
