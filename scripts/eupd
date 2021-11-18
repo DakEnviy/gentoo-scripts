@@ -2,6 +2,9 @@
 
 AUTO_SUDO=0
 
+COMMON_EMERGE_FLAGS=("--update" "--newuse" "--deep" "--with-bdeps=y" "--keep-going=y")
+DEFAULT_EMERGE_FLAGS=("--ask" "--verbose" "--quiet")
+
 asudo() {
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
         sudo $@
@@ -28,23 +31,75 @@ esync() {
     echo "Done."
 }
 
-case "$1" in
-    sa)
-        esync && asudo emerge -auND --with-bdeps=y --keep-going=y @world
-        ;;
-    sav)
-        esync && asudo emerge -avuND --with-bdeps=y --keep-going=y @world
-        ;;
-    s)
-        esync && asudo emerge -avquND --with-bdeps=y --keep-going=y @world
-        ;;
-    a)
-        asudo emerge -auND --with-bdeps=y --keep-going=y @world
-        ;;
-    av)
-        asudo emerge -avuND --with-bdeps=y --keep-going=y @world
-        ;;
-    *)
-        asudo emerge -avquND --with-bdeps=y --keep-going=y @world
-        ;;
-esac
+show_help() {
+    cat <<EOF
+
+USAGE:
+    ${0##*/} [options] [options without '-']
+
+DESCRIPTION:
+    Update script for emerge
+
+OPTIONS:
+    -h  Show this help message
+    -s  Sync repositories (runs layman -S and emerge --sync)
+    -a  Runs emerge with --sync flag (see man 1 emerge)
+    -v  Runs emerge with --verbose flag (see man 1 emerge)
+    -q  Runs emerge with --quiet flag (see man 1 emerge)
+    -p  Runs emerge with --pretend flag (see man 1 emerge)
+    -m  Runs emerge with --autounmask and --autounmask-write flags (see man 1 emerge)
+EOF
+}
+
+sync=0
+emerge_flags=()
+
+process_option() {
+    case "$1" in
+        h | \?)
+            show_help
+            exit
+            ;;
+        s)
+            sync=1
+            ;;
+        a)
+            emerge_flags+=("--ask")
+            ;;
+        v)
+            emerge_flags+=("--verbose")
+            ;;
+        q)
+            emerge_flags+=("--quiet")
+            ;;
+        p)
+            emerge_flags+=("--pretend")
+            ;;
+        m)
+            emerge_flags+=("--autounmask" "--autounmask-write")
+            ;;
+    esac
+}
+
+OPTIND=1
+while getopts "hsavqpm" opt; do
+    process_option "$opt"
+done
+shift "$((OPTIND-1))"
+
+if [[ -n "$1" ]]; then
+    for i in $(seq 1 ${#1}); do
+        process_option "${1:i-1:1}"
+    done
+    shift
+fi
+
+if [[ -z "$emerge_flags" ]]; then
+    emerge_flags="${DEFAULT_EMERGE_FLAGS[@]}"
+fi
+
+if [[ "$sync" -eq 1 ]]; then
+    esync
+fi
+
+asudo emerge "${emerge_flags[@]}" "${COMMON_EMERGE_FLAGS[@]}" "$@" "@world"
