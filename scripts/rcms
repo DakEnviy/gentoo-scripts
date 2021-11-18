@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# Systemd-like alias for rc-service
+#
+# Mikhail Golbakh (DakEnviy) <golbah@yandex.ru>
+#
+# See LICENSE for copyright information
 
 AUTO_SUDO=0
 

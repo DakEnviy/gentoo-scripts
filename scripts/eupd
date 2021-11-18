@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# Update script for emerge
+#
+# Mikhail Golbakh (DakEnviy) <golbah@yandex.ru>
+#
+# See LICENSE for copyright information
 
 AUTO_SUDO=0
 

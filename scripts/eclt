@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# Command which shows how long the system will be updated
+#
+# Mikhail Golbakh (DakEnviy) <golbah@yandex.ru>
+#
+# See LICENSE for copyright information
 
 AUTO_SUDO=0
 EMERGE_LOG_FILE="/var/log/emerge.log"

@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# Alias for synchronization with layman and emerge (layman -S and emerge --sync)
+#
+# Mikhail Golbakh (DakEnviy) <golbah@yandex.ru>
+#
+# See LICENSE for copyright information
 
 AUTO_SUDO=0
 

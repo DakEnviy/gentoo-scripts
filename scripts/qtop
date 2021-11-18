@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# Command which helps to know about time estimation for installing packages
+#
+# Mikhail Golbakh (DakEnviy) <golbah@yandex.ru>
+#
+# See LICENSE for copyright information
 
 AUTO_SUDO=0
 EMERGE_LOG_FILE="/var/log/emerge.log"
