@@ -23,6 +23,11 @@ elif [[ "$1" =~ ^[0-9]+$ ]]; then
 else
     list=$( qlist -CI | xargs qlop -aM | sort -t " " -k 2 -rn | grep -i "$1" )
     with_total=0
+
+    if [[ -z "${list[*]}" ]]; then
+        echo "Package '$1' not found"
+        exit
+    fi
 fi
 
 if [[ "$with_total" -eq 1 ]]; then
