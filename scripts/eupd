@@ -47,11 +47,13 @@ OPTIONS:
     -p  Runs emerge with --pretend flag (see man 1 emerge)
     -m  Runs emerge with --autounmask and --autounmask-write flags (see man 1 emerge)
     -d  Runs 'emerge --ask --quiet --depclean' after updating (see man 1 emerge)
+    -c  Runs 'portpeek --all --fix-confirm' after updating to clean obsolete entries in /etc/portage/package.* (see man 1 portpeek)
 EOF
 }
 
 sync=0
 depclean=0
+portpeek=0
 emerge_flags=()
 
 process_option() {
@@ -81,11 +83,14 @@ process_option() {
         d)
             depclean=1
             ;;
+        c)
+            portpeek=1
+            ;;
     esac
 }
 
 OPTIND=1
-while getopts "hsavqpmd" opt; do
+while getopts "hsavqpmdc" opt; do
     process_option "$opt"
 done
 shift "$((OPTIND-1))"
@@ -111,4 +116,15 @@ asudo emerge "${emerge_flags[@]}" "${COMMON_EMERGE_FLAGS[@]}" "$@" "@world"
 if [[ "$depclean" -eq 1 ]]; then
     echo "Running depclean..."
     emerge --ask --quiet --depclean
+fi
+
+if [[ "$portpeek" -eq 1 ]]; then
+    if command -v portpeek &>/dev/null; then
+        echo "Removing obsolete entries in /etc/portage/package.* ..."
+        portpeek --all --fix-confirm
+    else
+        echo "Failed to remove obsolete entries in /etc/portage/package.* ..." >&2
+        echo "portpeek is not installed" >&2
+        exit 1
+    fi
 fi
