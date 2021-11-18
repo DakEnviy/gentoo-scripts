@@ -2,7 +2,7 @@
 
 AUTO_SUDO=0
 
-COMMON_EMERGE_FLAGS=("--update" "--newuse" "--deep" "--with-bdeps=y" "--keep-going=y")
+COMMON_EMERGE_FLAGS=("--update" "--newuse" "--deep" "--with-bdeps=y" "--keep-going=y" "--autounmask" "--autounmask-write")
 DEFAULT_EMERGE_FLAGS=("--ask" "--verbose" "--quiet")
 
 asudo() {
@@ -45,7 +45,6 @@ OPTIONS:
     -v  Runs emerge with --verbose flag (see man 1 emerge)
     -q  Runs emerge with --quiet flag (see man 1 emerge)
     -p  Runs emerge with --pretend flag (see man 1 emerge)
-    -m  Runs emerge with --autounmask and --autounmask-write flags (see man 1 emerge)
     -d  Runs 'emerge --ask --quiet --depclean' after updating (see man 1 emerge)
     -c  Runs 'portpeek --all --fix-confirm' after updating to clean obsolete entries in /etc/portage/package.* (see man 1 portpeek)
 EOF
@@ -77,9 +76,6 @@ process_option() {
         p)
             emerge_flags+=("--pretend")
             ;;
-        m)
-            emerge_flags+=("--autounmask" "--autounmask-write")
-            ;;
         d)
             depclean=1
             ;;
@@ -90,7 +86,7 @@ process_option() {
 }
 
 OPTIND=1
-while getopts "hsavqpmdc" opt; do
+while getopts "hsavqpdc" opt; do
     process_option "$opt"
 done
 shift "$((OPTIND-1))"
