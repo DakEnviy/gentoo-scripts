@@ -2,18 +2,15 @@
 
 AUTO_SUDO=0
 
-asudo() {
+if [[ "$EUID" -ne 0 ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
-        sudo $@
+        sudo "$0" "$@"
+        exit $?
     else
-        $@
+        echo "No root alert!"
+        echo "Run this command with sudo"
+        exit
     fi
-}
-
-if [[ "$EUID" -ne 0 && "$AUTO_SUDO" -eq 0 ]]; then
-    echo "No root alert!"
-    echo "Run this command with sudo"
-    exit
 fi
 
 if command -v layman &>/dev/null; then
@@ -22,6 +19,6 @@ if command -v layman &>/dev/null; then
 fi
 
 echo "Syncing repositories..."
-asudo emerge --sync -q
+emerge --sync -q
 
 echo "Done."

@@ -2,20 +2,17 @@
 
 AUTO_SUDO=0
 
-asudo() {
+if [[ "$EUID" -ne 0 ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
-        sudo $@
+        sudo "$0" "$@"
+        exit $?
     else
-        $@
+        echo "No root alert!"
+        echo "Run this command with sudo"
+        exit
     fi
-}
-
-if [[ "$EUID" -ne 0 && "$AUTO_SUDO" -eq 0 ]]; then
-    echo "No root alert!"
-    echo "Run this command with sudo"
-    exit
 fi
 
 for service in "${@:2}"; do
-    asudo rc-service "$service" "$1"
+    rc-service "$service" "$1"
 done

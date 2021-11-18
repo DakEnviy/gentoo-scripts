@@ -3,28 +3,25 @@
 AUTO_SUDO=0
 EMERGE_LOG_FILE="/var/log/emerge.log"
 
-asudo() {
+if [[ ! -r "$EMERGE_LOG_FILE" ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
-        sudo $@
+        sudo "$0" "$@"
+        exit $?
     else
-        $@
+        echo "Could not open logfile '$EMERGE_LOG_FILE': Permission denied"
+        echo "Add your user to portage group or run this command with sudo"
+        exit
     fi
-}
-
-if [[ ! -r "$EMERGE_LOG_FILE" && "$AUTO_SUDO" -eq 0 ]]; then
-    echo "Could not open logfile '$EMERGE_LOG_FILE': Permission denied"
-    echo "Add your user to portage group or run this command with sudo"
-    exit
 fi
 
 with_total=1
 
 if [[ -z "$1" ]]; then
-    list=$( qlist -CI | asudo xargs qlop -aM | sort -t " " -k 2 -rn )
+    list=$( qlist -CI | xargs qlop -aM | sort -t " " -k 2 -rn )
 elif [[ "$1" =~ ^[0-9]+$ ]]; then
-    list=$( qlist -CI | asudo xargs qlop -aM | sort -t " " -k 2 -rn | head -n "$1" )
+    list=$( qlist -CI | xargs qlop -aM | sort -t " " -k 2 -rn | head -n "$1" )
 else
-    list=$( qlist -CI | asudo xargs qlop -aM | sort -t " " -k 2 -rn | grep -i "$1" )
+    list=$( qlist -CI | xargs qlop -aM | sort -t " " -k 2 -rn | grep -i "$1" )
     with_total=0
 fi
 

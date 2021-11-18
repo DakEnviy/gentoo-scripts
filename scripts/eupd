@@ -5,28 +5,25 @@ AUTO_SUDO=0
 COMMON_EMERGE_FLAGS=("--update" "--newuse" "--deep" "--with-bdeps=y" "--keep-going=y" "--autounmask" "--autounmask-write")
 DEFAULT_EMERGE_FLAGS=("--ask" "--verbose" "--quiet")
 
-asudo() {
+if [[ "$EUID" -ne 0 ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
-        sudo $@
+        sudo "$0" "$@"
+        exit $?
     else
-        $@
+        echo "No root alert!"
+        echo "Run this command with sudo"
+        exit
     fi
-}
-
-if [[ "$EUID" -ne 0 && "$AUTO_SUDO" -eq 0 ]]; then
-    echo "No root alert!"
-    echo "Run this command with sudo"
-    exit
 fi
 
 esync() {
     if command -v layman &>/dev/null; then
         echo "Syncing layman overlays..."
-        asudo layman -S -q
+        layman -S -q
     fi
 
     echo "Syncing repositories..."
-    asudo emerge --sync -q
+    emerge --sync -q
 }
 
 show_help() {
@@ -107,7 +104,7 @@ if [[ "$sync" -eq 1 ]]; then
 fi
 
 echo "Running emerge..."
-asudo emerge "${emerge_flags[@]}" "${COMMON_EMERGE_FLAGS[@]}" "$@" "@world"
+emerge "${emerge_flags[@]}" "${COMMON_EMERGE_FLAGS[@]}" "$@" "@world"
 
 if [[ "$depclean" -eq 1 ]]; then
     echo "Running depclean..."

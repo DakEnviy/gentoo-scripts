@@ -3,24 +3,21 @@
 AUTO_SUDO=0
 EMERGE_LOG_FILE="/var/log/emerge.log"
 
-asudo() {
+if [[ ! -r "$EMERGE_LOG_FILE" ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
-        sudo $@
+        sudo "$0" "$@"
+        exit $?
     else
-        $@
+        echo "Could not open logfile '$EMERGE_LOG_FILE': Permission denied"
+        echo "Add your user to portage group or run this command with sudo"
+        exit
     fi
-}
-
-if [[ ! -r "$EMERGE_LOG_FILE" && "$AUTO_SUDO" -eq 0 ]]; then
-    echo "Could not open logfile '$EMERGE_LOG_FILE': Permission denied"
-    echo "Add your user to portage group or run this command with sudo"
-    exit
 fi
 
 emerge -pvquND --with-bdeps=y @world\
     | grep -P '^\['\
     | sed -E 's/^\[[^]]+\] ([^ ]+) .+$/\1/;s/-[0-9\.]+(-r[0-9]+)?$//'\
-    | asudo xargs qlop -aM\
+    | xargs qlop -aM\
     | sort -t " " -k 2 -rn\
     | awk '{ total += $2; printf("%s ", substr($1, 1, length($1)-1)); system("date -u +%H:%M:%S -d @"$2); } END { printf "total "; system("date -u +%H:%M:%S -d @"total); }'\
     | cat -n\
