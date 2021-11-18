@@ -5,7 +5,7 @@ if [[ "$EUID" -ne 0 ]]; then
     exit
 fi
 
-if command -v layman1 &>/dev/null; then
+if command -v layman &>/dev/null; then
     echo "Syncing layman overlays..."
     layman -S -q
 fi
