@@ -1,6 +1,16 @@
 #!/bin/bash
 
-if [[ "$EUID" -ne 0 ]]; then
+AUTO_SUDO=0
+
+function asudo() {
+    if [[ "$AUTO_SUDO" -eq 1 ]]; then
+        sudo $@
+    else
+        $@
+    fi
+}
+
+if [[ "$EUID" -ne 0 && "$AUTO_SUDO" -eq 0 ]]; then
     echo "No root alert!"
     echo "Run this command with sudo"
     exit
@@ -8,10 +18,10 @@ fi
 
 if command -v layman &>/dev/null; then
     echo "Syncing layman overlays..."
-    layman -S -q
+    ausdo layman -S -q
 fi
 
 echo "Syncing repositories..."
-emerge --sync -q
+asudo emerge --sync -q
 
 echo "Done."

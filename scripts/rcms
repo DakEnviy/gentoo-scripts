@@ -1,11 +1,21 @@
 #!/bin/bash
 
-if [[ "$EUID" -ne 0 ]]; then
+AUTO_SUDO=0
+
+function asudo() {
+    if [[ "$AUTO_SUDO" -eq 1 ]]; then
+        sudo $@
+    else
+        $@
+    fi
+}
+
+if [[ "$EUID" -ne 0 && "$AUTO_SUDO" -eq 0 ]]; then
     echo "No root alert!"
     echo "Run this command with sudo"
     exit
 fi
 
 for service in "${@:2}"; do
-    rc-service "$service" "$1"
+    asudo rc-service "$service" "$1"
 done
