@@ -44,10 +44,11 @@ DESCRIPTION:
 OPTIONS:
     -h  Show this help message
     -s  Sync repositories (runs layman -S and emerge --sync)
-    -a  Runs emerge with --sync flag (see man 1 emerge)
+    -a  Runs emerge with --ask flag (see man 1 emerge)
     -v  Runs emerge with --verbose flag (see man 1 emerge)
     -q  Runs emerge with --quiet flag (see man 1 emerge)
     -p  Runs emerge with --pretend flag (see man 1 emerge)
+    -w  Runs emerge without default --ask, --verbose and --quiet flags
     -d  Runs 'emerge --ask --quiet --depclean' after updating (see man 1 emerge)
     -c  Runs 'portpeek --all --fix-confirm' after updating to clean obsolete entries in /etc/portage/package.* (see man 1 portpeek)
 EOF
@@ -56,6 +57,7 @@ EOF
 sync=0
 depclean=0
 portpeek=0
+without_default_flags=0
 emerge_flags=()
 
 process_option() {
@@ -79,6 +81,9 @@ process_option() {
         p)
             emerge_flags+=("--pretend")
             ;;
+        w)
+            without_default_flags=1
+            ;;
         d)
             depclean=1
             ;;
@@ -89,7 +94,7 @@ process_option() {
 }
 
 OPTIND=1
-while getopts "hsavqpdc" opt; do
+while getopts "hsavqpwdc" opt; do
     process_option "$opt"
 done
 shift "$((OPTIND-1))"
@@ -101,7 +106,7 @@ if [[ -n "$1" && "$1" =~ ^[^-] ]]; then
     shift
 fi
 
-if [[ "${#emerge_flags[@]}" -eq 0 ]]; then
+if [[ "${#emerge_flags[@]}" -eq 0 && "$without_default_flags" -eq 0 ]]; then
     emerge_flags=("${DEFAULT_EMERGE_FLAGS[@]}")
 fi
 
