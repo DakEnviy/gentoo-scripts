@@ -8,8 +8,14 @@
 
 AUTO_SUDO=0
 
-COMMON_EMERGE_FLAGS=("--update" "--newuse" "--deep" "--with-bdeps=y" "--keep-going=y" "--autounmask" "--autounmask-write")
-DEFAULT_EMERGE_FLAGS=("--ask" "--verbose" "--quiet")
+COMMON_UPDATE_FLAGS=("--update" "--newuse" "--deep" "--with-bdeps=y" "--keep-going=y" "--autounmask" "--autounmask-write")
+DEFAULT_UPDATE_FLAGS=("--ask" "--verbose" "--quiet")
+
+COMMON_SYNC_FLAGS=("--sync")
+DEFAULT_SYNC_FLAGS=("--quiet")
+
+COMMON_DEPCLEAN_FLAGS=("--depclean")
+DEFAULT_DEPCLEAN_FLAGS=("--ask" "--quiet")
 
 if [[ "$EUID" -ne 0 ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
@@ -21,16 +27,6 @@ if [[ "$EUID" -ne 0 ]]; then
         exit
     fi
 fi
-
-esync() {
-    if command -v layman &>/dev/null; then
-        echo "Syncing layman overlays..."
-        layman -S -q
-    fi
-
-    echo "Syncing repositories..."
-    emerge --sync -q
-}
 
 show_help() {
     cat <<EOF
@@ -48,7 +44,7 @@ OPTIONS:
     -v  Runs emerge with --verbose flag (see man 1 emerge)
     -q  Runs emerge with --quiet flag (see man 1 emerge)
     -p  Runs emerge with --pretend flag (see man 1 emerge)
-    -w  Runs emerge without default --ask, --verbose and --quiet flags
+    -w  Runs emerge without default flags
     -d  Runs 'emerge --ask --quiet --depclean' after updating (see man 1 emerge)
     -c  Runs 'portpeek --all --fix-confirm' after updating to clean obsolete entries in /etc/portage/package.* (see man 1 portpeek)
 EOF
@@ -58,7 +54,9 @@ sync=0
 depclean=0
 portpeek=0
 without_default_flags=0
-emerge_flags=()
+update_flags=()
+sync_flags=()
+depclean_flags=()
 
 process_option() {
     case "$1" in
@@ -70,16 +68,19 @@ process_option() {
             sync=1
             ;;
         a)
-            emerge_flags+=("--ask")
+            update_flags+=("--ask")
+            depclean_flags+=("--ask")
             ;;
         v)
-            emerge_flags+=("--verbose")
+            update_flags+=("--verbose")
             ;;
         q)
-            emerge_flags+=("--quiet")
+            update_flags+=("--quiet")
+            sync_flags+=("--quiet")
+            depclean_flags+=("--quiet")
             ;;
         p)
-            emerge_flags+=("--pretend")
+            update_flags+=("--pretend")
             ;;
         w)
             without_default_flags=1
@@ -106,20 +107,36 @@ if [[ -n "$1" && "$1" =~ ^[^-] ]]; then
     shift
 fi
 
-if [[ "${#emerge_flags[@]}" -eq 0 && "$without_default_flags" -eq 0 ]]; then
-    emerge_flags=("${DEFAULT_EMERGE_FLAGS[@]}")
+if [[ "$without_default_flags" -eq 0 ]]; then
+    if [[ "${#update_flags[@]}" -eq 0 ]]; then
+        update_flags=("${DEFAULT_UPDATE_FLAGS[@]}")
+    fi
+
+    if [[ "${#sync_flags[@]}" -eq 0 ]]; then
+        sync_flags=("${DEFAULT_SYNC_FLAGS[@]}")
+    fi
+
+    if [[ "${#depclean_flags[@]}" -eq 0 ]]; then
+        depclean_flags=("${DEFAULT_DEPCLEAN_FLAGS[@]}")
+    fi
 fi
 
 if [[ "$sync" -eq 1 ]]; then
-    esync
+    if command -v layman &>/dev/null; then
+        echo "Syncing layman overlays..."
+        layman -S -q
+    fi
+
+    echo "Syncing repositories..."
+    emerge "${sync_flags[@]}" "${COMMON_SYNC_FLAGS[@]}"
 fi
 
 echo "Running emerge..."
-emerge "${emerge_flags[@]}" "${COMMON_EMERGE_FLAGS[@]}" "$@" "@world"
+emerge "${update_flags[@]}" "${COMMON_UPDATE_FLAGS[@]}" "$@" "@world"
 
 if [[ "$depclean" -eq 1 ]]; then
     echo "Running depclean..."
-    emerge --ask --quiet --depclean
+    emerge "${depclean_flags[@]}" "${COMMON_DEPCLEAN_FLAGS[@]}"
 fi
 
 if [[ "$portpeek" -eq 1 ]]; then
