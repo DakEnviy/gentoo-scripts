@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# Rebuild the world in the new year
+#
+# Mikhail Golbakh (DakEnviy) <golbah@yandex.ru>
+#
+# See LICENSE for copyright information
+
+AUTO_SUDO=0
+
+if [[ "$EUID" -ne 0 ]]; then
+    if [[ "$AUTO_SUDO" -eq 1 ]]; then
+        sudo "$0" "$@"
+        exit $?
+    else
+        echo "No root alert!"
+        echo "Run this command with sudo"
+        exit
+    fi
+fi
+
+emerge -v1 --update --newuse --deep --changed-deps=y --changed-slot=y --with-bdeps=y --autounmask-backtrack=y --backtrack=30 @world
