@@ -8,6 +8,7 @@ Some useful scripts for gentoo.
 - **eupd** - update script for emerge
 - **rcms** - systemd-like alias for rc-service
 - **enewyear** - rebuild the world in the new year
+- **qorph** - find files that were not installed by the package manager
 
 Every script has `AUTO_SUDO` constant, which runs script as sudo automatically.
 If you want to enable this, write `AUTO_SUDO=1` instead of `AUTO_SUDO=0`
@@ -42,6 +43,10 @@ If you want to enable this, write `AUTO_SUDO=1` instead of `AUTO_SUDO=0`
 **enewyear**
 
 - sys-apps/portage
+
+**qorph**
+
+- app-portage/gentoolkit
 
 ## Install
 
