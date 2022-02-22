@@ -1,10 +1,14 @@
 #!/usr/bin/python
 
 import os
+import sys
 import argparse
+import subprocess
 from gentoolkit.package import Package
 from gentoolkit.helpers import get_installed_cpvs
 
+
+AUTO_SUDO=0
 
 QORPHIGNORE_FILEPATH = '/etc/gentoo-scripts/.qorphignore'
 
@@ -125,5 +129,14 @@ def main():
 
 
 if __name__ == '__main__':
+    if os.geteuid() != 0:
+        if AUTO_SUDO == 1:
+            result = subprocess.run(['sudo', *sys.argv])
+            exit(result.returncode)
+        else:
+            print('No root alert!')
+            print('Run this command with sudo')
+            exit(0)
+
     main()
 
