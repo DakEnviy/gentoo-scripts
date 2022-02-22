@@ -1,0 +1,129 @@
+#!/usr/bin/python
+
+import os
+import argparse
+from gentoolkit.package import Package
+from gentoolkit.helpers import get_installed_cpvs
+
+
+QORPHIGNORE_FILEPATH = '/etc/gentoo-scripts/.qorphignore'
+
+
+def prepare_ignore_file():
+    if os.path.isfile(QORPHIGNORE_FILEPATH):
+        return
+
+    with open(QORPHIGNORE_FILEPATH, 'w') as file:
+        file.write('/boot\n')
+        file.write('/dev\n')
+        file.write('/home\n')
+        file.write('/lost+found\n')
+        file.write('/media\n')
+        file.write('/mnt\n')
+        file.write('/proc\n')
+        file.write('/run\n')
+        file.write('/sys\n')
+        file.write('/tmp\n')
+        file.write('/usr/src\n')
+        file.write('/usr/tmp\n')
+        file.write('/var/cache\n')
+        file.write('/var/db/pkg\n')
+        file.write('/var/db/repos\n')
+        file.write('/var/db/sudo/lectured\n')
+        file.write('/var/lock\n')
+        file.write('/var/log\n')
+        file.write('/var/run\n')
+        file.write('/var/spool\n')
+        file.write('/var/tmp\n')
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Script to find files that were not installed by the package manager.')
+
+    parser.add_argument('path', nargs='?', default='/', help='find files in the specific path (default: /)')
+    parser.add_argument('-m', '--missing', action='store_true', help='find files that are missing which should be installed by the package manager')
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s 1.0')
+
+    return parser.parse_args()
+
+
+def get_installed_pkgs():
+    return [Package(cpv) for cpv in get_installed_cpvs()]
+
+
+def get_installed_entries():
+    entries = set()
+
+    for pkg in get_installed_pkgs():
+        for entry in pkg.parsed_contents():
+            entries.add(entry)
+
+    return entries
+
+
+def get_ignored_entries():
+    if not os.path.isfile(QORPHIGNORE_FILEPATH):
+        return set()
+
+    entries = set()
+
+    with open(QORPHIGNORE_FILEPATH, 'r') as file:
+        for line in file.readlines():
+            entries.add(line.strip())
+
+    return entries
+
+
+def is_entry_ignored(entry, ignored_entries):
+    for ignored_entry in ignored_entries:
+        if entry.startswith(ignored_entry):
+            return True
+
+    return False
+
+
+def print_missing_entries(entries):
+    for entry in entries:
+        if not os.path.exists(entry):
+            print(entry)
+
+
+def process_path(path, installed_entries, ignored_entries):
+    if is_entry_ignored(path, ignored_entries):
+        return False
+
+    if not os.path.isdir(path) or os.path.islink(path):
+        return path not in installed_entries
+
+    if path not in installed_entries and path != '/':
+        return True
+
+    for childname in sorted(os.listdir(path), key=str.lower):
+        childpath = os.path.join(path, childname)
+
+        if process_path(childpath, installed_entries, ignored_entries):
+            print(childpath)
+
+    return False
+
+
+def main():
+    prepare_ignore_file()
+
+    args = parse_args()
+
+    root_path = os.path.abspath(args.path)
+    installed_entries = get_installed_entries()
+    ignored_entries = get_ignored_entries()
+
+    if args.missing:
+        print_missing_entries(installed_entries)
+        return
+
+    if process_path(root_path, installed_entries, ignored_entries):
+        print(root_path)
+
+
+if __name__ == '__main__':
+    main()
+
