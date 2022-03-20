@@ -46,6 +46,7 @@ If you want to enable this, write `AUTO_SUDO=1` instead of `AUTO_SUDO=0`
 
 **qorph**
 
+- >=dev-lang/python-3.9
 - app-portage/gentoolkit
 
 ## Install
