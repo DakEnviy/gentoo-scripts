@@ -97,7 +97,7 @@ def process_path(path, installed_entries, ignored_entries):
         return False
 
     if not os.path.isdir(path) or os.path.islink(path):
-        return path not in installed_entries
+        return os.path.realpath(path) not in installed_entries
 
     if path not in installed_entries and path != '/':
         return True
