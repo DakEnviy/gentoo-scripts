@@ -13,6 +13,28 @@ Some useful scripts for gentoo.
 Every script has `AUTO_SUDO` constant, which runs script as sudo automatically.
 If you want to enable this, write `AUTO_SUDO=1` instead of `AUTO_SUDO=0`
 
+## Install
+
+### Using eselect repository - preferred method
+
+```
+# eselect repository enable underworld
+# emerge --sync
+# emerge -a gentoo-scripts
+```
+
+### Using layman
+
+```
+# layman -a underworld
+# layman -s underworld
+# emerge -a gentoo-scripts
+```
+
+### Manual
+
+Just place these scripts to /usr/bin directory.
+
 ## Requirements
 
 **qtop**
@@ -48,26 +70,4 @@ If you want to enable this, write `AUTO_SUDO=1` instead of `AUTO_SUDO=0`
 
 - >=dev-lang/python-3.9
 - app-portage/gentoolkit
-
-## Install
-
-### Using eselect repository - preferred method
-
-```
-# eselect repository enable underworld
-# emerge --sync
-# emerge -a gentoo-scripts
-```
-
-### Using layman
-
-```
-# layman -a underworld
-# layman -s underworld
-# emerge -a gentoo-scripts
-```
-
-### Manual
-
-Just place these scripts to /usr/bin directory.
 
