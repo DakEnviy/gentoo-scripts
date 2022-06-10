@@ -121,28 +121,36 @@ if [[ "$without_default_flags" -eq 0 ]]; then
     fi
 fi
 
+exit_if_failed() {
+    "$@"
+
+    if [[ "$?" -ne 0 ]]; then
+        exit $?
+    fi
+}
+
 if [[ "$sync" -eq 1 ]]; then
     if command -v layman &>/dev/null; then
         echo "Syncing layman overlays..."
-        layman -S -q
+        exit_if_failed layman -S -q
     fi
 
     echo "Syncing repositories..."
-    emerge "${sync_flags[@]}" "${COMMON_SYNC_FLAGS[@]}"
+    exit_if_failed emerge "${sync_flags[@]}" "${COMMON_SYNC_FLAGS[@]}"
 fi
 
 echo "Running emerge..."
-emerge "${update_flags[@]}" "${COMMON_UPDATE_FLAGS[@]}" "$@" "@world"
+exit_if_failed emerge "${update_flags[@]}" "${COMMON_UPDATE_FLAGS[@]}" "$@" "@world"
 
 if [[ "$depclean" -eq 1 ]]; then
     echo "Running depclean..."
-    emerge "${depclean_flags[@]}" "${COMMON_DEPCLEAN_FLAGS[@]}"
+    exit_if_failed emerge "${depclean_flags[@]}" "${COMMON_DEPCLEAN_FLAGS[@]}"
 fi
 
 if [[ "$portpeek" -eq 1 ]]; then
     if command -v portpeek &>/dev/null; then
         echo "Removing obsolete entries in /etc/portage/package.* ..."
-        portpeek --all --fix-confirm
+        exit_if_failed portpeek --all --fix-confirm
     else
         echo "Failed to remove obsolete entries in /etc/portage/package.* ..." >&2
         echo "portpeek is not installed" >&2
