@@ -68,6 +68,6 @@ Just place these scripts to /usr/bin directory.
 
 **qorph**
 
-- >=dev-lang/python-3.9
+- \>=dev-lang/python-3.9
 - app-portage/gentoolkit
 
