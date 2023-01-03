@@ -19,4 +19,4 @@ if [[ "$EUID" -ne 0 ]]; then
     fi
 fi
 
-emerge -v1 --update --newuse --deep --changed-deps=y --changed-slot=y --with-bdeps=y --autounmask-backtrack=y --backtrack=30 @world
+emerge --ask --verbose --quiet --emptytree --with-bdeps=y --keep-going=y --backtrack=30 @world 
