@@ -7,6 +7,7 @@
 # See LICENSE for copyright information
 
 AUTO_SUDO=0
+DEFAULT_GETBINPKG=0
 
 COMMON_UPDATE_FLAGS=("--update" "--newuse" "--deep" "--with-bdeps=y" "--keep-going=y" "--autounmask" "--autounmask-write")
 DEFAULT_UPDATE_FLAGS=("--ask" "--verbose" "--quiet")
@@ -16,6 +17,10 @@ DEFAULT_SYNC_FLAGS=("--quiet")
 
 COMMON_DEPCLEAN_FLAGS=("--depclean")
 DEFAULT_DEPCLEAN_FLAGS=("--ask" "--quiet")
+
+if [[ "$DEFAULT_GETBINPKG" -eq 1 ]]; then
+    DEFAULT_UPDATE_FLAGS+=("--getbinpkg")
+fi
 
 if [[ "$EUID" -ne 0 ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
@@ -44,6 +49,7 @@ OPTIONS:
     -v  Runs emerge with --verbose flag (see man 1 emerge)
     -q  Runs emerge with --quiet flag (see man 1 emerge)
     -p  Runs emerge with --pretend flag (see man 1 emerge)
+    -g  Runs emerge with --getbinpkg flag (see man 1 emerge)
     -w  Runs emerge without default flags
     -d  Runs 'emerge --ask --quiet --depclean' after updating (see man 1 emerge)
     -c  Runs 'portpeek --all --fix-confirm' after updating to clean obsolete entries in /etc/portage/package.* (see man 1 portpeek)
@@ -82,6 +88,9 @@ process_option() {
         p)
             update_flags+=("--pretend")
             ;;
+        g)
+            update_flags+=("--getbinpkg")
+            ;;
         w)
             without_default_flags=1
             ;;
@@ -95,7 +104,7 @@ process_option() {
 }
 
 OPTIND=1
-while getopts "hsavqpwdc" opt; do
+while getopts "hsavqpgwdc" opt; do
     process_option "$opt"
 done
 shift "$((OPTIND-1))"

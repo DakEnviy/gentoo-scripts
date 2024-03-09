@@ -7,6 +7,7 @@
 # See LICENSE for copyright information
 
 AUTO_SUDO=0
+DEFAULT_GETBINPKG=0
 
 if [[ "$EUID" -ne 0 ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then
@@ -19,4 +20,10 @@ if [[ "$EUID" -ne 0 ]]; then
     fi
 fi
 
-emerge --ask --verbose --quiet --emptytree --with-bdeps=y --keep-going=y --backtrack=30 @world 
+flags=("--ask" "--verbose" "--quiet" "--emptytree" "--with-bdeps=y" "--keep-going=y" "--backtrack=30")
+
+if [[ "$DEFAULT_GETBINPKG" -eq 1 ]]; then
+    flags+=("--getbinpkg")
+fi
+
+emerge "${flags[@]}" @world
