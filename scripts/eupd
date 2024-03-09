@@ -7,7 +7,6 @@
 # See LICENSE for copyright information
 
 AUTO_SUDO=0
-DEFAULT_GETBINPKG=0
 
 COMMON_UPDATE_FLAGS=("--update" "--newuse" "--deep" "--with-bdeps=y" "--keep-going=y" "--autounmask" "--autounmask-write")
 DEFAULT_UPDATE_FLAGS=("--ask" "--verbose" "--quiet")
@@ -17,10 +16,6 @@ DEFAULT_SYNC_FLAGS=("--quiet")
 
 COMMON_DEPCLEAN_FLAGS=("--depclean")
 DEFAULT_DEPCLEAN_FLAGS=("--ask" "--quiet")
-
-if [[ "$DEFAULT_GETBINPKG" -eq 1 ]]; then
-    DEFAULT_UPDATE_FLAGS+=("--getbinpkg")
-fi
 
 if [[ "$EUID" -ne 0 ]]; then
     if [[ "$AUTO_SUDO" -eq 1 ]]; then

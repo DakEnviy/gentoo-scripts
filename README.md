@@ -13,7 +13,6 @@ Some useful scripts for gentoo.
 ## Global settings
 
 - `AUTO_SUDO` - runs scripts as sudo automatically (default: `0`)
-- `DEFAULT_GETBINPKG` - adds `--getbinpkg` flag to `emerge` command (default: `0`)
 
 ## Install
 
