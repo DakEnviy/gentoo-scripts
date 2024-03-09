@@ -10,8 +10,10 @@ Some useful scripts for gentoo.
 - **enewyear** - rebuild the world in the new year
 - **qorph** - find files that were not installed by the package manager
 
-Every script has `AUTO_SUDO` constant, which runs script as sudo automatically.
-If you want to enable this, write `AUTO_SUDO=1` instead of `AUTO_SUDO=0`
+## Global settings
+
+- `AUTO_SUDO` - runs scripts as sudo automatically (default: `0`)
+- `DEFAULT_GETBINPKG` - adds `--getbinpkg` flag to `emerge` command (default: `0`)
 
 ## Install
 
